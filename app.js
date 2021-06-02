@@ -4,6 +4,8 @@ const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 
+const handlerErrors = require('./middliwares/handler-errors');
+
 const { PORT = 3000 } = process.env;
 
 const app = express();
@@ -21,6 +23,8 @@ mongoose.connect('mongodb://localhost:27017/moviesexplorerdb', {
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', require('./routes'));
+
+app.use(handlerErrors);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`)
