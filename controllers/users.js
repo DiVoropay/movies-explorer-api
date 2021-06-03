@@ -48,3 +48,22 @@ module.exports.login = (req, res, next) => {
     })
     .catch(next);
 };
+
+module.exports.getCurrentUser = (req, res, next) => {
+  const currentUserId = req.user._id;
+  User.findById({ _id: currentUserId })
+    .then((user) => res.send(user))
+    .catch(next);
+};
+
+module.exports.updateCurrentUser = (req, res, next) => {
+  const currentUserId = req.user._id;
+  const { email, name } = req.body; 
+  User.findByIdAndUpdate(
+      { _id: currentUserId },
+      { email, name} ,
+      { new: true, runValidators: true },
+    )
+    .then((user) => res.send(user))
+    .catch(next);
+};
