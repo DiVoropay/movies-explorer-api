@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const ConflictDataError = require('../errors/conflict-data-error');
 
-const { NODE_ENV, JWT_SECRET_KEY, JWT_EXPIRES_IN = '7d' } = process.env;
+const { JWT_SECRET_KEY, JWT_EXPIRES_IN } = require('../config');
 
 module.exports.createUser = (req, res, next) => {
   const { email, name, password } = req.body;
@@ -39,7 +39,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET_KEY : 'movies-secret',
+        JWT_SECRET_KEY,
         { expiresIn: JWT_EXPIRES_IN },
       );
       res.send({ token });

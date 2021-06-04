@@ -1,8 +1,6 @@
-require('dotenv').config();
-
 const jwt = require('jsonwebtoken');
 
-const { NODE_ENV, JWT_SECRET_KEY } = process.env;
+const { JWT_SECRET_KEY } = require('../config');
 
 const CredentialsError = require('../errors/credentials-error');
 
@@ -19,7 +17,7 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET_KEY : 'movies-secret');
+    payload = jwt.verify(token, JWT_SECRET_KEY);
   } catch (err) {
     throw new CredentialsError('Необходима авторизация');
   }
