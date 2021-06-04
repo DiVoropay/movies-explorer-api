@@ -11,11 +11,10 @@ module.exports.createUser = (req, res, next) => {
 
   bcrypt.hash(password, 10)
     .then((hash) => {
-
       User.create({
         email: email.toLowerCase(),
         name,
-        password: hash
+        password: hash,
       })
         .then((createdUser) => {
           const userWithoutPassword = createdUser;
@@ -24,13 +23,12 @@ module.exports.createUser = (req, res, next) => {
 
           res.send(userWithoutPassword);
         })
-      .catch((err) => {
-        if (err.code === 11000) {
-          return next(new ConflictDataError(`Пользователь с почтой ${email} уже существует`));
-        }
-        return next(err);
-      });
-
+        .catch((err) => {
+          if (err.code === 11000) {
+            return next(new ConflictDataError(`Пользователь с почтой ${email} уже существует`));
+          }
+          return next(err);
+        });
     })
     .catch(next);
 };
@@ -58,12 +56,12 @@ module.exports.getCurrentUser = (req, res, next) => {
 
 module.exports.updateCurrentUser = (req, res, next) => {
   const currentUserId = req.user._id;
-  const { email, name } = req.body; 
+  const { email, name } = req.body;
   User.findByIdAndUpdate(
-      { _id: currentUserId },
-      { email, name} ,
-      { new: true, runValidators: true },
-    )
+    { _id: currentUserId },
+    { email, name },
+    { new: true, runValidators: true },
+  )
     .then((user) => res.send(user))
     .catch(next);
 };

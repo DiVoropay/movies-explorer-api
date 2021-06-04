@@ -25,18 +25,14 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.findUserByCredentials = function (email, password) {
-  return this.findOne({ email }).select('+password')
-    .orFail(()=> {throw new CredentialsError('Неправильные почта или пароль')})
-    .then((user) => {
-      return bcrypt.compare(password, user.password)
-        .then((matched) => {
-          if (!matched) {
-            throw new CredentialsError('Неправильные почта или пароль');
-          }
-          return user;
-        });
-    });
-};
+userSchema.statics.findUserByCredentials = (email, password) => this.findOne({ email }).select('+password')
+  .orFail(() => { throw new CredentialsError('Неправильные почта или пароль'); })
+  .then((user) => bcrypt.compare(password, user.password)
+    .then((matched) => {
+      if (!matched) {
+        throw new CredentialsError('Неправильные почта или пароль');
+      }
+      return user;
+    }));
 
 module.exports = mongoose.model('user', userSchema);

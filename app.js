@@ -6,14 +6,14 @@ const mongoose = require('mongoose');
 
 const handlerErrors = require('./middliwares/handler-errors');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, MONGO_DB = 'mongodb://localhost:27017/moviesexplorerdb' } = process.env;
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-mongoose.connect('mongodb://localhost:27017/moviesexplorerdb', {
+mongoose.connect(MONGO_DB, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -22,10 +22,8 @@ mongoose.connect('mongodb://localhost:27017/moviesexplorerdb', {
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', require('./routes'));
+app.use(require('./routes'));
 
 app.use(handlerErrors);
 
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`)
-}) 
+app.listen(PORT, () => {});
