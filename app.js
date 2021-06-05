@@ -1,6 +1,7 @@
 const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const { errors } = require('celebrate');
 
 const handlerErrors = require('./middlewares/handler-errors');
@@ -19,6 +20,7 @@ mongoose.connect(MONGO_DB, {
 });
 
 app.use(requestLogger);
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
