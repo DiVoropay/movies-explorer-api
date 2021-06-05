@@ -1,6 +1,7 @@
 const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 
 const handlerErrors = require('./middlewares/handler-errors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -26,6 +27,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(routes);
 
 app.use(errorLogger);
+app.use(errors());
 app.use(handlerErrors);
 
 app.listen(PORT, () => {});
