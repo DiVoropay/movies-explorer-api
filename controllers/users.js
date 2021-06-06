@@ -3,8 +3,21 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 const ConflictDataError = require('../errors/conflict-data-error');
+const BadRequestError = require('../errors/bad-request-error');
 
 const { JWT_SECRET_KEY, JWT_EXPIRES_IN } = require('../config');
+
+const hendlerError = (err) => {
+  switch (err.name) {
+    case 'ValidationError':
+      return new BadRequestError(`${Object.values(err.errors).map((error) => error.message).join(', ')}`);
+    case 'CastError':
+      return new BadRequestError(`Ошибка запроса ${err.message}`);
+    case 'MongoError':
+      return err.code === 11000 ? new ConflictDataError(`Пользователь с почтой ${err.keyValue.email} уже существует`) : err;
+    default: return err;
+  }
+};
 
 module.exports.createUser = (req, res, next) => {
   const { email, name, password } = req.body;
@@ -18,17 +31,11 @@ module.exports.createUser = (req, res, next) => {
       })
         .then((createdUser) => {
           const userWithoutPassword = createdUser;
-
           userWithoutPassword.password = undefined;
 
           res.send(userWithoutPassword);
         })
-        .catch((err) => {
-          if (err.code === 11000) {
-            return next(new ConflictDataError(`Пользователь с почтой ${email} уже существует`));
-          }
-          return next(err);
-        });
+        .catch((err) => next(hendlerError(err, email)));
     })
     .catch(next);
 };
@@ -44,14 +51,14 @@ module.exports.login = (req, res, next) => {
       );
       res.send({ token });
     })
-    .catch(next);
+    .catch((err) => next(hendlerError(err)));
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
   const currentUserId = req.user._id;
   User.findById({ _id: currentUserId })
     .then((user) => res.send(user))
-    .catch(next);
+    .catch((err) => next(hendlerError(err)));
 };
 
 module.exports.updateCurrentUser = (req, res, next) => {
@@ -63,5 +70,5 @@ module.exports.updateCurrentUser = (req, res, next) => {
     { new: true, runValidators: true },
   )
     .then((user) => res.send(user))
-    .catch(next);
+    .catch((err) => next(hendlerError(err)));
 };
