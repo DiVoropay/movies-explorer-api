@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const validator = require('validator');
 
 const CredentialsError = require('../errors/credentials-error');
 
@@ -9,7 +10,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Поле EMAIL должно быть заполнено'],
     unique: true,
     validate: {
-      validator: (v) => /\w+@\w+\.\w+/.test(v),
+      validator: (v) => validator.isEmail(v),
       message: 'Неправильный формат почты {VALUE}',
     },
   },
@@ -25,14 +26,16 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.findUserByCredentials = (email, password) => this.findOne({ email }).select('+password')
-  .orFail(() => { throw new CredentialsError('Неправильные почта или пароль'); })
-  .then((user) => bcrypt.compare(password, user.password)
-    .then((matched) => {
-      if (!matched) {
-        throw new CredentialsError('Неправильные почта или пароль');
-      }
-      return user;
-    }));
+userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
+  return this.findOne({ email }).select('+password')
+    .orFail(() => { throw new CredentialsError('Неправильные почта или пароль'); })
+    .then((user) => bcrypt.compare(password, user.password)
+      .then((matched) => {
+        if (!matched) {
+          throw new CredentialsError('Неправильные почта или пароль');
+        }
+        return user;
+      }));
+};
 
 module.exports = mongoose.model('user', userSchema);

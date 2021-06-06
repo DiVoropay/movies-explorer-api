@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-
-const regexLink = /^http[s]?:\/\/[www.]*[\w-._~:/?#[\]@!$&'()*+,;=]+/;
+const validator = require('validator');
 
 const movieSchema = new mongoose.Schema({
   nameRU: {
@@ -12,19 +11,20 @@ const movieSchema = new mongoose.Schema({
     required: true,
   },
   movieId: {
-    type: String,
+    type: Number,
     required: true,
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
     required: true,
+    select: false,
   },
   thumbnail: {
     type: String,
     required: true,
     validate: {
-      validator: (v) => regexLink.test(v),
+      validator: (v) => validator.isURL(v),
       message: 'Неправильный формат ссылки {VALUE}',
     },
   },
@@ -32,7 +32,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => regexLink.test(v),
+      validator: (v) => validator.isURL(v),
       message: 'Неправильный формат ссылки {VALUE}',
     },
   },
@@ -40,7 +40,7 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => regexLink.test(v),
+      validator: (v) => validator.isURL(v),
       message: 'Неправильный формат ссылки {VALUE}',
     },
   },

@@ -1,7 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
 
-const PATTERN_URL = /^http[s]?:\/\/[www.]*[\w-._~:/?#[\]@!$&'()*+,;=]+/;
-
 module.exports.validateUserData = celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required()
@@ -9,9 +7,8 @@ module.exports.validateUserData = celebrate({
         'any.required': 'Поле "email" должно быть заполнено',
         'string.email': 'Недопустимый формат email',
       }),
-    password: Joi.string().min(8).required()
+    password: Joi.string().required()
       .messages({
-        'string.min': 'Минимальная длина поля "password" - 8',
         'any.required': 'Поле "password" должно быть заполнено',
       }),
     name: Joi.string().min(2).max(30).required()
@@ -23,12 +20,16 @@ module.exports.validateUserData = celebrate({
   }),
 });
 
-module.exports.validateUserEmail = celebrate({
+module.exports.validateUserLoginData = celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required()
       .messages({
         'any.required': 'Поле "email" должно быть заполнено',
         'string.email': 'Недопустимый формат email',
+      }),
+    password: Joi.string().required()
+      .messages({
+        'any.required': 'Поле "password" должно быть заполнено',
       }),
   }),
 });
@@ -64,30 +65,31 @@ module.exports.validateMovieData = celebrate({
   body: Joi.object().keys({
     nameEN: Joi.string().required()
       .messages({
-        'any.required': 'Поле "name" должно быть заполнено',
+        'any.required': 'Поле "nameEN" должно быть заполнено',
       }),
     nameRU: Joi.string().required()
       .messages({
-        'any.required': 'Поле "name" должно быть заполнено',
+        'any.required': 'Поле "nameRU" должно быть заполнено',
       }),
-    movieId: Joi.string().required()
+    movieId: Joi.number().required()
       .messages({
-        'any.required': 'Поле "name" должно быть заполнено',
+        'any.required': 'Поле "movieId" должно быть заполнено',
+        'number.base': 'Поле "movieId" должно быть числом',
       }),
-    thumbnail: Joi.string().required().pattern(PATTERN_URL)
+    thumbnail: Joi.string().uri().required()
       .messages({
         'any.required': 'Поле "thumbnail" должно быть заполнено',
-        'string.pattern.base': 'Неправильный формат ссылки "thumbnail"',
+        'any.uri': 'Неправильный формат ссылки "thumbnail"',
       }),
-    trailer: Joi.string().required().pattern(PATTERN_URL)
+    trailer: Joi.string().uri().required()
       .messages({
         'any.required': 'Поле "trailer" должно быть заполнено',
-        'string.pattern.base': 'Неправильный формат ссылки "trailer"',
+        'any.uri': 'Неправильный формат ссылки "trailer"',
       }),
-    image: Joi.string().pattern(PATTERN_URL).required()
+    image: Joi.string().uri().required()
       .messages({
         'any.required': 'Поле "image" должно быть заполнено',
-        'string.pattern.base': 'Неправильный формат ссылки "image"',
+        'any.uri': 'Неправильный формат ссылки "image"',
       }),
     description: Joi.string().required()
       .messages({
