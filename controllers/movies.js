@@ -4,7 +4,7 @@ const NotFoundError = require('../errors/not-found-error');
 const AccessError = require('../errors/access-error');
 const BadRequestError = require('../errors/bad-request-error');
 
-const hendlerError = (err) => {
+const handlerError = (err) => {
   switch (err.name) {
     case 'ValidationError':
       return new BadRequestError(`${Object.values(err.errors).map((error) => error.message).join(', ')}`);
@@ -51,7 +51,7 @@ module.exports.createMovie = (req, res, next) => {
 
       res.send(movieWithoutOwner);
     })
-    .catch((err) => next(hendlerError(err)));
+    .catch((err) => next(handlerError(err)));
 };
 
 module.exports.getMoviesByOwner = (req, res, next) => {
@@ -59,7 +59,7 @@ module.exports.getMoviesByOwner = (req, res, next) => {
 
   Movie.find({ owner: currentUserId })
     .then((movies) => res.send(movies))
-    .catch((err) => next(hendlerError(err)));
+    .catch((err) => next(handlerError(err)));
 };
 
 module.exports.removeMovie = (req, res, next) => {
@@ -79,7 +79,7 @@ module.exports.removeMovie = (req, res, next) => {
 
           res.send(movieWithoutOwner);
         })
-        .catch((err) => next(hendlerError(err)));
+        .catch((err) => next(handlerError(err)));
     })
-    .catch((err) => next(hendlerError(err)));
+    .catch((err) => next(handlerError(err)));
 };
