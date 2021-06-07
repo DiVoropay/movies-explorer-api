@@ -7,7 +7,7 @@ const BadRequestError = require('../errors/bad-request-error');
 
 const { JWT_SECRET_KEY, JWT_EXPIRES_IN } = require('../config');
 
-const hendlerError = (err) => {
+const handlerError = (err) => {
   switch (err.name) {
     case 'ValidationError':
       return new BadRequestError(`${Object.values(err.errors).map((error) => error.message).join(', ')}`);
@@ -35,7 +35,7 @@ module.exports.createUser = (req, res, next) => {
 
           res.send(userWithoutPassword);
         })
-        .catch((err) => next(hendlerError(err, email)));
+        .catch((err) => next(handlerError(err)));
     })
     .catch(next);
 };
@@ -51,14 +51,14 @@ module.exports.login = (req, res, next) => {
       );
       res.send({ token });
     })
-    .catch((err) => next(hendlerError(err)));
+    .catch((err) => next(handlerError(err)));
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
   const currentUserId = req.user._id;
   User.findById({ _id: currentUserId })
     .then((user) => res.send(user))
-    .catch((err) => next(hendlerError(err)));
+    .catch((err) => next(handlerError(err)));
 };
 
 module.exports.updateCurrentUser = (req, res, next) => {
@@ -70,5 +70,5 @@ module.exports.updateCurrentUser = (req, res, next) => {
     { new: true, runValidators: true },
   )
     .then((user) => res.send(user))
-    .catch((err) => next(hendlerError(err)));
+    .catch((err) => next(handlerError(err)));
 };
