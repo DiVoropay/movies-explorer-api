@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const configDev = {
-  PORT: 3001,
+  PORT: process.env.PORT || 3000,
   MONGO_DB: 'mongodb://localhost:27017/moviesexplorerdb',
   JWT_SECRET_KEY: 'movies-secret',
   JWT_EXPIRES_IN: '7d',
