@@ -14,7 +14,7 @@ const handlerError = (err) => {
     case 'CastError':
       return new BadRequestError(`Ошибка запроса ${err.message}`);
     case 'MongoError':
-      return err.code === 11000 ? new ConflictDataError(`Пользователь с почтой ${err.keyValue.email} уже существует`) : err;
+      return err.code === 11000 ? new ConflictDataError(`Пользователь с указанной почтой ${err.keyValue.email || ''} уже существует`) : err;
     default: return err;
   }
 };
